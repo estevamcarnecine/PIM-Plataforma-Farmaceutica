@@ -1,0 +1,165 @@
+# 📄 Dossiê de Requisitos e Arquitetura - Plataforma Farmacêutica
+
+Este documento estabelece os requisitos técnicos e as diretrizes estratégicas de arquitetura para o desenvolvimento da Plataforma Farmacêutica, garantindo a conformidade regulatória com **FDA 21 CFR Part 11** e **GAMP 5**.
+
+---
+
+## I. Requisitos de Arquitetura de Redes e Sistemas Distribuídos
+
+O foco é o desenho e implementação de um ecossistema digital baseado em arquitetura distribuída de baixa latência.
+
+* **Infraestrutura Lógica:** Elaborar um protótipo de infraestrutura lógica que conecte os módulos da plataforma em uma topologia hierárquica resiliente.
+* **Segmentação e Controle:** Consolidar a infraestrutura de rede segmentando-a por **VLANs**.
+* **Redes Definidas por Software (SDN):** O controle da rede deve ser feito por SDN, com a implementação simulada a partir de controladores como **OpenDaylight**.
+* **Roteamento:** Contemplar políticas de roteamento redundante simuladas com protocolos como **OSPF** ou **BGP**.
+* **Segurança e QoS:** O design deve fornecer isolamento de fluxos sensíveis e permitir a aplicação de políticas de **QoS** específicas para registros auditáveis e dados clínicos confidenciais.
+* **Resiliência e Continuidade:** O sistema deve ter tolerância a falhas e desempenho previsível, suportando replicação tolerante a falhas e consistência eventual.
+* **Conformidade Regulatória:** As práticas de segurança devem atender aos critérios de segurança previstos no **FDA 21 CFR Part 11**.
+* **Avaliação:** O desempenho da infraestrutura deve ser demonstrado por meio de métricas de **latência**, **throughput** e **disponibilidade**.
+
+---
+
+## II. Requisitos de Programação Estruturada em C
+
+A Programação Estruturada em C é requerida para garantir desempenho determinístico e latência mínima na aquisição de sinais laboratoriais e fabris.
+
+### Funcionalidades Obrigatórias:
+
+Desenvolver um conjunto de bibliotecas nativas em C, compiladas para execução em dispositivos de borda, que devem realizar:
+
+* Rotinas de **filtragem digital** (filtragem de sinais).
+* **Compressão sem perda** (ou adaptativa) de registros biomédicos.
+* **Escrita segura** em sistemas de arquivos journaling.
+* **Gravação segura** em arquivos binários.
+
+### Especificações Técnicas:
+
+* **Uso da Linguagem:** Explorar o uso criterioso de vetores, matrizes, funções, ponteiros, controle de fluxo e manipulação de arquivos.
+* **Formatos de Dados:** Os resultados devem ser gravados em formatos **binários padronizados** que preservem a precisão de ponto flutuante.
+* **Integração:** Os módulos nativos em C devem demonstrar integração por **FFI (Foreign Function Interface)** com camadas superiores em Python ou C++.
+* **Avaliação de Desempenho:** O desempenho será avaliado por benchmarks de uso de **CPU**, **latência média** e **consumo de memória**, seguindo metodologia reprodutível.
+
+---
+
+## III. Requisitos de Inteligência Artificial
+
+A plataforma deve ser apoiada por modelos de inteligência artificial explicáveis.
+
+### 1. Entrega de Modelos Funcionais
+
+A equipe deve construir pipelines completos e entregar **três modelos funcionais**:
+
+| Modelo | Algoritmo | Propósito |
+| :--- | :--- | :--- |
+| **Classificador** | Aprendizado Supervisionado | Estratificação de voluntários |
+| **Rede Convolucional** | Redes Neurais Profundas (CNN) | Inspeção visual de comprimidos |
+| **Preditor** | Aprendizado Supervisionado/RNN | Predição de rendimento de lotes |
+
+### 2. Explicabilidade (XAI)
+
+A inteligibilidade dos modelos deve ser garantida por métodos de explicabilidade, gerando artefatos que possam ser revisados por avaliadores regulatórios:
+
+* **Dados Tabulares (Classificador/Preditor):** Utilização de **SHAP** (SHapley Additive exPlanations).
+* **Visão (CNN):** Utilização de **Grad-CAM** (Gradient-weighted Class Activation Mapping).
+
+### 3. Documentação Técnica de IA
+
+Os documentos técnicos devem incluir:
+
+* **Matriz de confusão**, **Curvas ROC**.
+* Métricas de **precisão** e **F1-score**.
+* Relatórios de explicabilidade.
+
+---
+
+## IV. Requisitos de Análise e Projeto de Sistemas (Modelagem e Auditabilidade)
+
+Esta seção lida com a modelagem do software e a documentação técnica rigorosa, compatível com o domínio regulamentado.
+
+* **Modelagem e Ferramentas:** Utilizar ferramentas **CASE** (Computer-Aided Software Engineering) para a produção de diagramas.
+* **Rastreabilidade:** Deve haver rastreabilidade completa entre requisitos, componentes e testes.
+* **Dossiê de Auditoria:** Compilar um dossiê capaz de ser auditado conforme **GAMP 5** e **FDA 21 CFR Part 11**.
+
+### Diagramas Obrigatórios:
+
+| Diagrama | Propósito no Projeto |
+| :--- | :--- |
+| **Casos de Uso** | Representar as interações entre Atores e o sistema. |
+| **Classes** | Definir a estrutura estática dos dados (ex: `RegistroBiomedico`, `LogAuditoria`). |
+| **Sequência** | Modelar o fluxo de baixa latência (ex: Dispositivo C -> Camada FFI). |
+| **Implantação** | Ilustrar a topologia de hardware e software. |
+
+---
+
+# 📑 Dossiê de Arquitetura e Estratégia do Projeto
+
+## I. Estratégia de Arquitetura de Redes e Sistemas Distribuídos
+
+### 1. Topologia e Resiliência
+
+* **Topologia Escolhida:**
+    * **Data Center:** Arquitetura **Spine-Leaf** (baixa latência e alta largura de banda).
+    * **Borda (Laboratório/Fábrica):** Modelo **Hierárquico de Três Camadas** (isolamento de falhas).
+* **Resiliência:** Implementação de **VRRP/HSRP** no core e roteamento **ECMP** (Equal-Cost Multi-Path) na malha Spine-Leaf para redundância ativa-ativa.
+
+### 2. Segmentação (VLANs) e Controle
+
+A rede será segmentada com o uso de um controlador SDN (simulado por OpenDaylight) para gerenciar o fluxo e políticas de QoS.
+
+| VLAN | Propósito | Prioridade QoS |
+| :--- | :--- | :--- |
+| **VLAN Audit** | Fluxo de dados de auditoria (logs, acessos). | Alta (Strict Priority) |
+| **VLAN Clinical/Lab** | Dados confidenciais e aquisição de sinais (módulos C). | Alta (Strict Priority) |
+| **VLAN AI/Compute** | Servidores de processamento de modelos de IA. | Média |
+| **VLAN Management** | Acesso de administradores e controladores SDN. | Baixa |
+
+### 3. Segurança e Conformidade (FDA 21 CFR Part 11)
+
+* **Isolamento:** Uso de **ACLs** aplicadas pela SDN para impedir comunicação direta entre VLANs sensíveis, forçando o tráfego a passar por um Firewall Virtual.
+* **Conformidade:**
+    * **Assinaturas Eletrônicas:** O módulo C deve gerar um **hash (checksum)** para o registro binário.
+    * **Trilhas de Auditoria (Audit Trails):** Eventos críticos devem ser registrados de forma **imutável** na VLAN Audit.
+    * **Comunicação:** Uso obrigatório de **TLS/VPN** entre módulos.
+
+---
+
+## II. Estratégia de Inteligência Artificial
+
+### 1. Pipelines e Algoritmos
+
+Detalhe dos modelos a serem implementados:
+
+| Modelo | Algoritmo/Arquitetura | Dados de Entrada | Estratégia de Saída |
+| :--- | :--- | :--- | :--- |
+| **Classificador** | Random Forest / XGBoost | Características demográficas/biométricas | Categoria de risco/estratificação. |
+| **Rede Convolucional** | VGG / ResNet | Imagens de alta resolução de comprimidos | Classificação de defeito (Good/Defective). |
+| **Preditor** | RNN / MLP | Parâmetros de processo (série temporal) | Previsão de rendimento percentual do lote. |
+
+### 2. Explicabilidade (XAI) na Prática
+
+| Modelo | Método XAI | Artefato para Reguladores |
+| :--- | :--- | :--- |
+| **Classificador/Preditor** | **SHAP** | Quantificação da contribuição de cada *feature*. |
+| **Rede Convolucional** | **Grad-CAM** | Mapas de calor que destacam regiões da imagem que influenciaram a decisão. |
+
+---
+
+## III. Estratégia de Análise e Projeto de Sistemas
+
+### 1. Padrões de Projeto (Design Patterns)
+
+| Padrão Escolhido | Justificativa Técnica |
+| :--- | :--- |
+| **Microservices** | Favorece a escalabilidade, a resiliência e a separação de domínios (Aquisição, IA, Auditoria). |
+| **Observer/Publisher-Subscriber** | Ideal para a arquitetura distribuída, notificando módulos de IA em tempo real sobre novos dados. |
+| **Repository** | Abstrair a lógica de acesso a dados (banco de dados/arquivos binários) das regras de negócio. |
+
+### 2. Dossiê de Auditoria (Conformidade GAMP 5)
+
+O dossiê de auditoria será estruturado seguindo as 5 fases do ciclo de vida **GAMP 5**:
+
+1.  **Conceito:** Justificativa e Classificação do Sistema (**GAMP 5 Categoria 4: Software Configurável**).
+2.  **Fase de Projeto:** Especificação de Requisitos do Usuário (**URS**), Especificação Funcional (**FS**), Especificação de Configuração (**CS**).
+3.  **Fase de Teste e Verificação:** Protocolos de Teste (**FAT, SAT, IQ, OQ, PQ**).
+4.  **Fase de Operação:** Procedimentos Operacionais Padrão (**SOPs**), Treinamento, Gestão de Mudanças.
+5.  **Fase de Aposentadoria:** Plano de migração e arquivo de dados.
