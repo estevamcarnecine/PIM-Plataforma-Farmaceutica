@@ -17,6 +17,8 @@ typedef char DataRecord_size_assert[(sizeof(DataRecord) == 17) ? 1 : -1];
 
 #define RECORD_BUFFER_SIZE 10
 
-int write_records_to_binary(const DataRecord *records, int count, const char *filename);
+unsigned int compute_record_checksum(const DataRecord *record);
+
+int write_records_to_binary(DataRecord *records, int count, const char *filename);
 
 #endif

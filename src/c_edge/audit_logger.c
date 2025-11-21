@@ -22,6 +22,10 @@ static const char *event_type_to_string(AuditEventType event) {
             return "BATCH_COMPLETED";
         case AUDIT_EVENT_FILE_ACCESS_ERROR:
             return "FILE_ACCESS_ERROR";
+        case AUDIT_EVENT_SECURE_TRANSMIT:
+            return "SECURE_TRANSMIT";
+        case AUDIT_EVENT_SECURE_TRANSMIT_FAILURE:
+            return "SECURE_TRANSMIT_FAILURE";
         default:
             return "UNKNOWN_EVENT";
     }

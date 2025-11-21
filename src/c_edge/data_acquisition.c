@@ -6,17 +6,21 @@
 #include <string.h>
 #include <errno.h>
 
-static unsigned int calculate_checksum(const void *data, size_t size) {
+static unsigned int calculate_checksum(const unsigned char *bytes, size_t size) {
 
     unsigned int checksum = 0;
-    const unsigned char *bytes = (const unsigned char *)data;
     for (size_t i = 0; i < size; i++) {
         checksum ^= bytes[i];
     }
     return checksum;
 }
 
-int write_records_to_binary(const DataRecord *records, int count, const char *filename) {
+unsigned int compute_record_checksum(const DataRecord *record) {
+    size_t payload_size = sizeof(DataRecord) - sizeof(record->checksum);
+    return calculate_checksum((const unsigned char *)record, payload_size);
+}
+
+int write_records_to_binary(DataRecord *records, int count, const char *filename) {
     FILE *fp = fopen(filename, "wb");
     if (fp == NULL) {
         log_audit_event(AUDIT_EVENT_FILE_ACCESS_ERROR,
@@ -33,8 +37,9 @@ int write_records_to_binary(const DataRecord *records, int count, const char *fi
 
     for (int i = 0; i < count; i++) {
         DataRecord record_copy = records[i];
-        record_copy.checksum = calculate_checksum(&record_copy,
-                                                  sizeof(record_copy) - sizeof(record_copy.checksum));
+        unsigned int checksum = compute_record_checksum(&records[i]);
+        record_copy.checksum = checksum;
+        records[i].checksum = checksum;
 
         size_t written = fwrite(&record_copy, sizeof(DataRecord), 1, fp);
 
